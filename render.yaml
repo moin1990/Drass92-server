@@ -1,0 +1,52 @@
+# ─────────────────────────────────────────────────────────
+# Render Deployment Configuration
+# Commit this file to your server repo root.
+# Render auto-detects it on push.
+# ─────────────────────────────────────────────────────────
+
+services:
+  - type: web
+    name: ideavault-api
+    runtime: node
+    region: oregon          # closest to MongoDB Atlas us-east / global
+    plan: free              # upgrade to starter ($7/mo) for no spin-down
+    branch: main
+
+    buildCommand: npm install
+    startCommand: npm start
+
+    # Health check — Render pings this to confirm the app is up
+    healthCheckPath: /
+
+    # Auto-deploy on every push to main branch
+    autoDeploy: true
+
+    envVars:
+      # ── App ────────────────────────────────────────────
+      - key: NODE_ENV
+        value: production
+
+      - key: PORT
+        value: 10000         # Render assigns this port internally
+
+      # ── Set these manually in the Render dashboard ────
+      # Dashboard → Your Service → Environment → Add Environment Variable
+
+      - key: MONGODB_URI
+        sync: false          # sync:false = set manually in dashboard
+
+      - key: JWT_SECRET
+        sync: false
+
+      - key: CLIENT_URL
+        sync: false          # e.g. https://ideavault.vercel.app
+
+      # ── Firebase Admin SDK ────────────────────────────
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false
+
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false          # paste the full key including -----BEGIN...-----
